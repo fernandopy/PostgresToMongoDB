@@ -30,7 +30,7 @@ def construye():
     cur = conex_postgres()
     rs = get_ids()
     
-    for id in rs:
+    for id in rs:#ARREGLAR
         cur.execute("select row_to_json(row) from (select * from tuits where id="+str(id[0])+")row;")
         tuit = cur.fetchall()
         t = json.loads(tuit[0][0])
