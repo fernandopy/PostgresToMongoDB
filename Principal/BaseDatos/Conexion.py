@@ -22,63 +22,65 @@ def get_ids():
         print(sql_string)
         cur.execute(sql_string)
         ids = cur.fetchall()
-        return ids
+        for i in ids:
+            print(i[0])
+            construye(str(i[0]))
     except psycopg2.Error as e:
         print "Error Postgres %s" % e
         
-def construye():
+def construye(id):
     cur = conex_postgres()
-    rs = get_ids()
+    #rs = get_ids()
     
-    for id in rs:#ARREGLAR
-        cur.execute("select row_to_json(row) from (select * from tuits where id="+str(id[0])+")row;")
-        tuit = cur.fetchall()
-        t = json.loads(tuit[0][0])
-        cur.execute("select row_to_json(row) from (select latitud,longitud from coordenadas where id_tuit="+str(id[0])+")row;")
-        cord = cur.fetchall()
-        if not(not cord):
-            c = json.loads(cord[0][0])
-            t['coordenadas'] = c
-        else:
-             t['coordenadas'] = cord
-        cur.execute("select row_to_json(row) from (select latitud,longitud from boundings where id="+str(id[0])+")row;")
-        bounding = cur.fetchall()
-        if not(not bounding):
-            c = json.loads(bounding[0][0])
-            t['bound'] = c
-        else:
-             t['bound'] = bounding
-        cur.execute("select row_to_json(row) from (select text,ind_inicial,ind_final from hashtags where id_tuits="+str(id[0])+")row;")
-        hash = cur.fetchall()
-        if not(not hash):
-            c = json.loads(hash[0][0])
-            t['hashtags'] = c
-        else:
-             t['hashtags'] = hash
-        cur.execute("select row_to_json(row) from (select full_name,country,place_type,id,name from place where id_tuit="+str(id[0])+")row;")
-        place = cur.fetchall()
-        if not(not place):
-            c = json.loads(place[0][0])
-            t['place'] =c 
-        else:
-             t['place'] = place
-        cur.execute("select row_to_json(row) from (select ind_inicial,ind_final,screen_name, name from user_mentions where id_tuits="+str(id[0])+")row;")
-        um = cur.fetchall()
-        if not(not um):
-            c = json.loads(um[0][0])
-            t['user_mentions'] = c
-        else:
-             t['user_mentions'] = um
+    #for id in rs:#ARREGLAR
+    cur.execute("select row_to_json(row) from (select * from tuits where id="+str(id)+")row;")
+    tuit = cur.fetchall()
+    t = json.loads(tuit[0][0])
+    cur.execute("select row_to_json(row) from (select latitud,longitud from coordenadas where id_tuit="+str(id)+")row;")
+    cord = cur.fetchall()
+    if not(not cord):
+        c = json.loads(cord[0][0])
+        t['coordenadas'] = c
+    else:
+        t['coordenadas'] = cord
+    cur.execute("select row_to_json(row) from (select latitud,longitud from boundings where id="+str(id)+")row;")
+    bounding = cur.fetchall()
+    if not(not bounding):
+        c = json.loads(bounding[0][0])
+        t['bound'] = c
+    else:
+        t['bound'] = bounding
+    cur.execute("select row_to_json(row) from (select text,ind_inicial,ind_final from hashtags where id_tuits="+str(id)+")row;")
+    hash = cur.fetchall()
+    if not(not hash):
+        c = json.loads(hash[0][0])
+        t['hashtags'] = c
+    else:
+        t['hashtags'] = hash
+    cur.execute("select row_to_json(row) from (select full_name,country,place_type,id,name from place where id_tuit="+str(id)+")row;")
+    place = cur.fetchall()
+    if not(not place):
+        c = json.loads(place[0][0])
+        t['place'] =c 
+    else:
+        t['place'] = place
+    cur.execute("select row_to_json(row) from (select ind_inicial,ind_final,screen_name, name from user_mentions where id_tuits="+str(id)+")row;")
+    um = cur.fetchall()
+    if not(not um):
+        c = json.loads(um[0][0])
+        t['user_mentions'] = c
+    else:
+        t['user_mentions'] = um
         
-        cur.execute("select row_to_json(row) from (select * from usuarios where id_tuit="+str(id[0])+")row;")
-        u = cur.fetchall()
-        if not(not u):
-            c = json.loads(u[0][0])
-            t['users'] = c
-        else:
-             t['users'] = u
+    cur.execute("select row_to_json(row) from (select * from usuarios where id_tuit="+str(id)+")row;")
+    u = cur.fetchall()
+    if not(not u):
+        c = json.loads(u[0][0])
+        t['users'] = c
+    else:
+        t['users'] = u
              
-        insertMongo(t)
+    insertMongo(t)
         
 def insertMongo(objeto):
     try:
@@ -93,4 +95,4 @@ def insertMongo(objeto):
 
 
 if __name__ =="__main__":
-     construye()
+     get_ids()
