@@ -4,21 +4,27 @@ import pymongo
 import json
 
 def conex_postgres():
-    conn_string = "host='localhost' dbname='BaseTwitter' user='postgres' password='qwer$%'"
-    conn = psycopg2.connect(conn_string)
-    print("****")
+    try:
+        conn_string = "host='localhost' dbname='BaseTwitter' user='postgres' password='qwer$%'"
+        conn = psycopg2.connect(conn_string)
+        print("****")
+    except psycopg2.Error as e:
+        print "Error Postgres %s" % e
  
     # conn.cursor will return a cursor object, you can use this cursor to perform queries
     cursor = conn.cursor()
     return cursor
 
 def get_ids():
-    cur = conex_postgres()
-    sql_string = """SELECT id from tuits ;"""
-    print(sql_string)
-    cur.execute(sql_string)
-    ids = cur.fetchall()
-    return ids 
+    try:
+        cur = conex_postgres()
+        sql_string = """SELECT id from tuits ;"""
+        print(sql_string)
+        cur.execute(sql_string)
+        ids = cur.fetchall()
+        return ids
+    except psycopg2.Error as e:
+        print "Error Postgres %s" % e
         
 def construye():
     cur = conex_postgres()
@@ -73,6 +79,7 @@ def construye():
              t['users'] = u
              
         insertMongo(t)
+        
 def insertMongo(objeto):
     try:
         client = MongoClient()
